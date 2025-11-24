@@ -44,7 +44,7 @@ telegraph
 tenacity
 tgcrypto
 uv
-uvloop
+uvloop==0.21.0
 xattr
 yt-dlp==2025.01.26
 pytz
