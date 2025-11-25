@@ -76,10 +76,10 @@ async def token_callback(_, query):
     input_token = query.data.split()[1]
     data = user_data.get(user_id, {})
     if 'token' not in data or data['token'] != input_token:
-        return await query.answer('Already Used, Generate New One', show_alert=True)
+        return await query.answer('⚠️ Already Used, Generate New One', show_alert=True)
     update_user_ldata(user_id, 'token', str(uuid4()))
     update_user_ldata(user_id, 'time', time())
-    await query.answer('Activated Temporary Token!', show_alert=True)
+    await query.answer('✅ Activated Temporary Token!', show_alert=True)
     kb = query.message.reply_markup.inline_keyboard[1:]
     kb.insert(0, [InlineKeyboardButton(BotTheme('ACTIVATED'), callback_data='pass activated')])
     await editReplyMarkup(query.message, InlineKeyboardMarkup(kb))
@@ -147,7 +147,7 @@ async def search_images():
                 soup = BeautifulSoup(r.text, "html.parser")
                 images = soup.select('img[data-src^="https://c4.wallpaperflare.com/wallpaper"]')
                 if len(images) == 0:
-                    LOGGER.info("Maybe Site is Blocked on your Server, Add Images Manually !!")
+                    LOGGER.info("⚠️ Maybe Site is Blocked on your Server, Add Images Manually!")
                 for img in images:
                     img_url = img['data-src']
                     if img_url not in config_dict['IMAGES']:
@@ -157,7 +157,7 @@ async def search_images():
         if DATABASE_URL:
             await DbManger().update_config({'IMAGES': config_dict['IMAGES'], 'STATUS_LIMIT': config_dict['STATUS_LIMIT']})
     except Exception as e:
-        LOGGER.error(f"An error occurred: {e}")
+        LOGGER.error(f"❌ An error occurred: {e}")
 
 
 async def bot_help(client, message):
@@ -181,7 +181,7 @@ async def restart_notification():
 
     async def send_incompelete_task_message(cid, msg):
         try:
-            if msg.startswith("⌬ <b><i>Restarted Successfully!</i></b>"):
+            if msg.startswith("🔄 <b><i>Restarted Successfully!</i></b>"):
                 await bot.edit_message_text(chat_id=chat_id, message_id=msg_id, text=msg, disable_web_page_preview=True)
                 await aioremove(".restartmsg")
             else:
@@ -193,12 +193,12 @@ async def restart_notification():
         if notifier_dict := await DbManger().get_incomplete_tasks():
             for cid, data in notifier_dict.items():
                 msg = BotTheme('RESTART_SUCCESS', time=now.strftime('%I:%M:%S %p'), date=now.strftime('%d/%m/%y'), timz=config_dict['TIMEZONE'], version=get_version()) if cid == chat_id else BotTheme('RESTARTED')
-                msg += "\n\n⌬ <b><i>Incomplete Tasks!</i></b>"
+                msg += "\n\n⚠️ <b><i>Incomplete Tasks!</i></b>"
                 for tag, links in data.items():
-                    msg += f"\n➲ <b>User:</b> {tag}\n┖ <b>Tasks:</b>"
+                    msg += f"\n👤 <b>User:</b> {tag}\n└─ <b>Tasks:</b>"
                     for index, link in enumerate(links, start=1):
                         msg_link, source = next(iter(link.items()))
-                        msg += f" {index}. <a href='{source}'>S</a> ->  <a href='{msg_link}'>L</a> |"
+                        msg += f" {index}. <a href='{source}'>📥</a> ➜ <a href='{msg_link}'>🔗</a> |"
                         if len(msg.encode()) > 4000:
                             await send_incompelete_task_message(cid, msg)
                             msg = ''
@@ -221,25 +221,25 @@ async def log_check():
                 try:
                     chat = await bot.get_chat(int(chat_id))
                 except Exception:
-                    LOGGER.error(f"Not Connected Chat ID : {chat_id}, Make sure the Bot is Added!")
+                    LOGGER.error(f"❌ Not Connected Chat ID: {chat_id}, Make sure the Bot is Added!")
                     continue
                 if chat.type == ChatType.CHANNEL:
                     if not (await chat.get_member(bot.me.id)).privileges.can_post_messages:
-                        LOGGER.error(f"Not Connected Chat ID : {chat_id}, Make the Bot is Admin in Channel to Connect!")
+                        LOGGER.error(f"❌ Not Connected Chat ID: {chat_id}, Make the Bot is Admin in Channel to Connect!")
                         continue
                     if user and not (await chat.get_member(user.me.id)).privileges.can_post_messages:
-                        LOGGER.error(f"Not Connected Chat ID : {chat_id}, Make the User is Admin in Channel to Connect!")
+                        LOGGER.error(f"❌ Not Connected Chat ID: {chat_id}, Make the User is Admin in Channel to Connect!")
                         continue
                 elif chat.type == ChatType.SUPERGROUP:
                     if not (await chat.get_member(bot.me.id)).status in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR]:
-                        LOGGER.error(f"Not Connected Chat ID : {chat_id}, Make the Bot is Admin in Group to Connect!")
+                        LOGGER.error(f"❌ Not Connected Chat ID: {chat_id}, Make the Bot is Admin in Group to Connect!")
                         continue
                     if user and not (await chat.get_member(user.me.id)).status in [ChatMemberStatus.OWNER, ChatMemberStatus.ADMINISTRATOR]:
-                        LOGGER.error(f"Not Connected Chat ID : {chat_id}, Make the User is Admin in Group to Connect!")
+                        LOGGER.error(f"❌ Not Connected Chat ID: {chat_id}, Make the User is Admin in Group to Connect!")
                         continue
-                LOGGER.info(f"Connected Chat ID : {chat_id}")
+                LOGGER.info(f"✅ Connected Chat ID: {chat_id}")
             except Exception as e:
-                LOGGER.error(f"Not Connected Chat ID : {chat_id}, ERROR: {e}")
+                LOGGER.error(f"❌ Not Connected Chat ID: {chat_id}, ERROR: {e}")
     
 
 async def main():
@@ -262,9 +262,9 @@ async def main():
         BotCommands.HelpCommand) & CustomFilters.authorized & ~CustomFilters.blacklisted))
     bot.add_handler(MessageHandler(stats, filters=command(
         BotCommands.StatsCommand) & CustomFilters.authorized & ~CustomFilters.blacklisted))
-    LOGGER.info(f"WZML-X Advance Bot[@{bot_name}] Started!")
+    LOGGER.info(f"🚀 WZML-X Advance Bot[@{bot_name}] Started!")
     if user:
-        LOGGER.info(f"WZ's User [@{user.me.username}] Ready!")
+        LOGGER.info(f"👤 WZ's User [@{user.me.username}] Ready!")
     signal(SIGINT, exit_clean_up)
 
 async def stop_signals():
