@@ -18,7 +18,7 @@ class DbManger:
     def __connect(self):
         try:
             self.__conn = AsyncIOMotorClient(DATABASE_URL)
-            self.__db = self.__conn.pbxmlx  # Fixed: Added f-string
+            self.__db = self.__conn.wzmlx  # Fixed: Added f-string
         except PyMongoError as e:
             LOGGER.error(f"Error in DB connection: {e}")
             self.__err = True
