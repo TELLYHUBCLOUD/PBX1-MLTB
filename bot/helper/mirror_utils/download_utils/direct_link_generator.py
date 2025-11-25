@@ -587,39 +587,35 @@ def uploadee(url):
 
 def terabox(url):
     try:
-        # Encode original terabox link
         encoded = quote(url, safe='')
-        
-        # New API endpoint
         api_url = f"https://terabox-api.tellycloudapi.workers.dev/?url={encoded}"
-
         resp = requests.get(api_url, timeout=30)
         resp.raise_for_status()
 
         data = resp.json()
 
-        # Accept all possible keys from API
-        proxy = (
-            data.get("download_proxy") or
-            data.get("download_link") or
-            data.get("stream_link")
-        )
+        # ✅ Corrected line
+        proxy = data.get("stream_link") or data.get("download_proxy") or data.get("download_link")
 
         if not proxy:
-            raise DirectDownloadLinkException("API returned no valid download/stream link")
+            raise DirectDownloadLinkException("API returned no valid URL")
 
         return proxy
 
     except DirectDownloadLinkException:
         raise
-
     except Exception as e:
         raise DirectDownloadLinkException(f"Failed to bypass Terabox URL: {e}")
 
 
-def gofile(url, auth):
+def gofile(url):
     try:
-        _password = sha256(auth[1].encode("utf-8")).hexdigest() if auth else ""
+        if "::" in url:
+            _password = url.split("::")[-1]
+            _password = sha256(_password.encode("utf-8")).hexdigest()
+            url = url.split("::")[-2]
+        else:
+            _password = ""
         _id = url.split("/")[-1]
     except Exception as e:
         raise DirectDownloadLinkException(f"ERROR: {e.__class__.__name__}")
@@ -679,15 +675,15 @@ def gofile(url, auth):
                 if not content["public"]:
                     continue
                 if not folderPath:
-                    newFolderPath = path.join(details["title"], content["name"])
+                    newFolderPath = ospath.join(details["title"], content["name"])
                 else:
-                    newFolderPath = path.join(folderPath, content["name"])
+                    newFolderPath = ospath.join(folderPath, content["name"])
                 __fetch_links(session, content["id"], newFolderPath)
             else:
                 if not folderPath:
                     folderPath = details["title"]
                 item = {
-                    "path": path.join(folderPath),
+                    "path": ospath.join(folderPath),
                     "filename": content["name"],
                     "url": content["link"],
                 }
