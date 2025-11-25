@@ -2,10 +2,25 @@
 from asyncio import sleep
 from time import time
 
-from bot import download_dict, download_dict_lock, get_client, QbInterval, config_dict, QbTorrents, qb_listener_lock, LOGGER, bot_loop
+from bot import (
+    download_dict,
+    download_dict_lock,
+    get_client,
+    QbInterval,
+    config_dict,
+    QbTorrents,
+    qb_listener_lock,
+    LOGGER,
+    bot_loop,
+)
 from bot.helper.mirror_utils.status_utils.qbit_status import QbittorrentStatus
 from bot.helper.telegram_helper.message_utils import update_all_messages
-from bot.helper.ext_utils.bot_utils import get_readable_time, getDownloadByGid, new_task, sync_to_async
+from bot.helper.ext_utils.bot_utils import (
+    get_readable_time,
+    getDownloadByGid,
+    new_task,
+    sync_to_async,
+)
 from bot.helper.ext_utils.fs_utils import clean_unwanted
 from bot.helper.ext_utils.task_manager import limit_checker, stop_duplicate_check
 
@@ -20,14 +35,14 @@ async def __remove_torrent(client, hash_, tag):
 
 @new_task
 async def __onDownloadError(err, tor, button=None):
-    LOGGER.info(f"Cancelling Download: {tor.name}")
+    LOGGER.info(f"⛔ Cancelling Download: {tor.name}")
     ext_hash = tor.hash
     download = await getDownloadByGid(ext_hash[:12])
     if not hasattr(download, 'client'):
         return
     listener = download.listener()
     client = download.client()
-    await listener.onDownloadError(err, button)
+    await listener.onDownloadError(f"⛔ {err}", button)
     await sync_to_async(client.torrents_pause, torrent_hashes=ext_hash)
     await sleep(0.3)
     await __remove_torrent(client, ext_hash, tor.tags)
@@ -36,13 +51,13 @@ async def __onDownloadError(err, tor, button=None):
 @new_task
 async def __onSeedFinish(tor):
     ext_hash = tor.hash
-    LOGGER.info(f"Cancelling Seed: {tor.name}")
+    LOGGER.info(f"🛑 Cancelling Seed: {tor.name}")
     download = await getDownloadByGid(ext_hash[:12])
     if not hasattr(download, 'client'):
         return
     listener = download.listener()
     client = download.client()
-    msg = f"Seeding stopped with Ratio: {round(tor.ratio, 3)} and Time: {get_readable_time(tor.seeding_time)}"
+    msg = f"🛑 <b>Seeding Stopped</b>\n📉 Ratio: {round(tor.ratio, 3)}\n⏳ Time: {get_readable_time(tor.seeding_time)}"
     await listener.onUploadError(msg)
     await __remove_torrent(client, ext_hash, tor.tags)
 
@@ -58,6 +73,7 @@ async def __stop_duplicate(tor):
     if msg:
         __onDownloadError(msg, tor, button)
 
+
 @new_task
 async def __size_checked(tor):
     download = await getDownloadByGid(tor.hash[:12])
@@ -66,6 +82,7 @@ async def __size_checked(tor):
         size = tor.size
         if limit_exceeded := await limit_checker(size, listener, isTorrent=True):
             await __onDownloadError(limit_exceeded, tor)
+
 
 @new_task
 async def __onDownloadComplete(tor):
@@ -99,7 +116,7 @@ async def __onDownloadComplete(tor):
             else:
                 return
         await update_all_messages()
-        LOGGER.info(f"Seeding started: {tor.name} - Hash: {ext_hash}")
+        LOGGER.info(f"🌱 Seeding started: {tor.name} - Hash: {ext_hash}")
         await sync_to_async(client.auth_log_out)
     else:
         await __remove_torrent(client, ext_hash, tag)
@@ -123,7 +140,7 @@ async def __qb_listener():
                         TORRENT_TIMEOUT = config_dict['TORRENT_TIMEOUT']
                         QbTorrents[tag]['stalled_time'] = time()
                         if TORRENT_TIMEOUT and time() - tor_info.added_on >= TORRENT_TIMEOUT:
-                            __onDownloadError("Dead Torrent!", tor_info)
+                            __onDownloadError("💀 Dead Torrent!", tor_info)
                         else:
                             await sync_to_async(client.torrents_reannounce, torrent_hashes=tor_info.hash)
                     elif state == "downloading":
@@ -137,21 +154,21 @@ async def __qb_listener():
                     elif state == "stalledDL":
                         TORRENT_TIMEOUT = config_dict['TORRENT_TIMEOUT']
                         if not QbTorrents[tag]['rechecked'] and 0.99989999999999999 < tor_info.progress < 1:
-                            msg = f"Force recheck - Name: {tor_info.name} Hash: "
+                            msg = f"♻️ Force recheck - Name: {tor_info.name} Hash: "
                             msg += f"{tor_info.hash} Downloaded Bytes: {tor_info.downloaded} "
                             msg += f"Size: {tor_info.size} Total Size: {tor_info.total_size}"
                             LOGGER.warning(msg)
                             await sync_to_async(client.torrents_recheck, torrent_hashes=tor_info.hash)
                             QbTorrents[tag]['rechecked'] = True
                         elif TORRENT_TIMEOUT and time() - QbTorrents[tag]['stalled_time'] >= TORRENT_TIMEOUT:
-                            __onDownloadError("Dead Torrent!", tor_info)
+                            __onDownloadError("💀 Dead Torrent!", tor_info)
                         else:
                             await sync_to_async(client.torrents_reannounce, torrent_hashes=tor_info.hash)
                     elif state == "missingFiles":
                         await sync_to_async(client.torrents_recheck, torrent_hashes=tor_info.hash)
                     elif state == "error":
                         __onDownloadError(
-                            "No enough space for this torrent on device", tor_info)
+                            "💾 No enough space for this torrent on device", tor_info)
                     elif tor_info.completion_on != 0 and not QbTorrents[tag]['uploaded'] and \
                             state not in ['checkingUP', 'checkingDL', 'checkingResumeData']:
                         QbTorrents[tag]['uploaded'] = True
@@ -167,8 +184,14 @@ async def __qb_listener():
 
 async def onDownloadStart(tag):
     async with qb_listener_lock:
-        QbTorrents[tag] = {'stalled_time': time(
-        ), 'stop_dup_check': False, 'rechecked': False, 'uploaded': False, 'seeding': False, 'size_checked': False}
+        QbTorrents[tag] = {
+            'stalled_time': time(),
+            'stop_dup_check': False,
+            'rechecked': False,
+            'uploaded': False,
+            'seeding': False,
+            'size_checked': False
+        }
         if not QbInterval:
             periodic = bot_loop.create_task(__qb_listener())
             QbInterval.append(periodic)
