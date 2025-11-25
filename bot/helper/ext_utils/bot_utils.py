@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python3
 import platform
 from base64 import b64encode
@@ -45,19 +44,19 @@ PAGE_NO      = 1
 
 
 class MirrorStatus:
-    STATUS_UPLOADING   = "𝚄𝚙𝚕𝚘𝚊𝚍𝚒𝚗𝚐"
-    STATUS_DOWNLOADING = "𝙳𝚘𝚠𝚗𝚕𝚘𝚊𝚍𝚒𝚗𝚐"
-    STATUS_CLONING     = "𝙲𝚕𝚘𝚗𝚎"
-    STATUS_QUEUEDL     = "𝚀𝚞𝚎𝚞𝚎𝙳𝚕"
-    STATUS_QUEUEUP     = "𝚀𝚞𝚎𝚞𝚎𝚄𝚙"
-    STATUS_PAUSED      = "𝙿𝚊𝚞𝚜𝚎"
-    STATUS_ARCHIVING   = "𝙰𝚛𝚌𝚑𝚒𝚟𝚎"
-    STATUS_EXTRACTING  = "𝙴𝚡𝚝𝚛𝚊𝚌𝚝"
-    STATUS_SPLITTING   = "𝚂𝚙𝚕𝚒𝚝𝚝𝚒𝚗𝚐"
-    STATUS_METADATA    = "𝙼𝚎𝚝𝚊𝚍𝚊𝚝𝚊"
-    STATUS_CHECKING    = "𝙲𝚑𝚎𝚌𝚔𝚄𝚙"
-    STATUS_SEEDING     = "𝚂𝚎𝚎𝚍𝚒𝚗𝚐"
-    STATUS_ATTACHMENT  = "𝙰𝚝𝚝𝚊𝚌𝚑𝚖𝚎𝚗𝚝"
+    STATUS_UPLOADING   = "📤 𝚄𝚙𝚕𝚘𝚊𝚍𝚒𝚗𝚐"
+    STATUS_DOWNLOADING = "📥 𝙳𝚘𝚠𝚗𝚕𝚘𝚊𝚍𝚒𝚗𝚐"
+    STATUS_CLONING     = "📋 𝙲𝚕𝚘𝚗𝚎"
+    STATUS_QUEUEDL     = "⏳ 𝚀𝚞𝚎𝚞𝚎𝙳𝚕"
+    STATUS_QUEUEUP     = "⏳ 𝚀𝚞𝚎𝚞𝚎𝚄𝚙"
+    STATUS_PAUSED      = "⏸️ 𝙿𝚊𝚞𝚜𝚎"
+    STATUS_ARCHIVING   = "🗜️ 𝙰𝚛𝚌𝚑𝚒𝚟𝚎"
+    STATUS_EXTRACTING  = "📂 𝙴𝚡𝚝𝚛𝚊𝚌𝚝"
+    STATUS_SPLITTING   = "✂️ 𝚂𝚙𝚕𝚒𝚝𝚝𝚒𝚗𝚐"
+    STATUS_METADATA    = "📝 𝙼𝚎𝚝𝚊𝚍𝚊𝚝𝚊"
+    STATUS_CHECKING    = "🔍 𝙲𝚑𝚎𝚌𝚔𝚄𝚙"
+    STATUS_SEEDING     = "🌱 𝚂𝚎𝚎𝚍𝚒𝚗𝚐"
+    STATUS_ATTACHMENT  = "📎 𝙰𝚝𝚝𝚊𝚌𝚑𝚖𝚎𝚗𝚝"
 
 
 class setInterval:
@@ -113,12 +112,12 @@ def bt_selection_buttons(id_):
     buttons = ButtonMaker()
     BASE_URL = config_dict['BASE_URL']
     if config_dict['WEB_PINCODE']:
-        buttons.ubutton("Select Files", f"{BASE_URL}/app/files/{id_}")
-        buttons.ibutton("Pincode", f"btsel pin {gid} {pincode}")
+        buttons.ubutton("📁 Select Files", f"{BASE_URL}/app/files/{id_}")
+        buttons.ibutton("🔐 Pincode", f"btsel pin {gid} {pincode}")
     else:
-        buttons.ubutton("Select Files", f"{BASE_URL}/app/files/{id_}?pin_code={pincode}")
-    buttons.ibutton("❌", f"btsel rm {gid} {id_}")
-    buttons.ibutton("Done Selecting", f"btsel done {gid} {id_}")
+        buttons.ubutton("📁 Select Files", f"{BASE_URL}/app/files/{id_}?pin_code={pincode}")
+    buttons.ibutton("❌ Cancel", f"btsel rm {gid} {id_}")
+    buttons.ibutton("✅ Done Selecting", f"btsel done {gid} {id_}")
     return buttons.build_menu(2)
 
 
@@ -131,12 +130,16 @@ async def get_telegraph_list(telegraph_content):
     buttons, _ = extra_btns(buttons)
     return buttons.build_menu(1)
 
+
 def handleIndex(index, dic):
     while True:
         if abs(index) >= len(dic):
-            if index < 0: index = len(dic) - abs(index)
-            elif index > 0: index = index - len(dic)
-        else: break
+            if index < 0:
+                index = len(dic) - abs(index)
+            elif index > 0:
+                index = index - len(dic)
+        else:
+            break
     return index
     
 
@@ -175,14 +178,18 @@ def get_all_versions():
             vpy = get_distribution('pyrofork').version
         except DistributionNotFound:
             vpy = "2.xx.xx"
-    bot_cache['eng_versions'] = {'p7zip':vp, 'ffmpeg': vf, 'rclone': vr,
-                                    'aria': aria2.client.get_version()['version'],
-                                    'aiohttp': get_distribution('aiohttp').version,
-                                    'gapi': get_distribution('google-api-python-client').version,
-                                    'mega': MegaApi('test').getVersion(),
-                                    'qbit': get_client().app.version,
-                                    'pyro': vpy,
-                                    'ytdlp': get_distribution('yt-dlp').version}
+    bot_cache['eng_versions'] = {
+        'p7zip': vp,
+        'ffmpeg': vf,
+        'rclone': vr,
+        'aria': aria2.client.get_version()['version'],
+        'aiohttp': get_distribution('aiohttp').version,
+        'gapi': get_distribution('google-api-python-client').version,
+        'mega': MegaApi('test').getVersion(),
+        'qbit': get_client().app.version,
+        'pyro': vpy,
+        'ytdlp': get_distribution('yt-dlp').version
+    }
 
 
 class EngineStatus:
@@ -190,18 +197,18 @@ class EngineStatus:
         if not (version_cache := bot_cache.get('eng_versions')):
             get_all_versions()
             version_cache = bot_cache.get('eng_versions')
-        self.STATUS_ARIA = f"Aʀɪᴀ𝟸 v{version_cache['aria']}"
-        self.STATUS_AIOHTTP = f"AɪᴏHᴛᴛᴘ {version_cache['aiohttp']}"
-        self.STATUS_GD = f"Gᴏᴏɢʟᴇ-Aᴘɪ v{version_cache['gapi']}"
-        self.STATUS_MEGA = f"MᴇɢᴀSᴅᴋ v{version_cache['mega']}"
-        self.STATUS_QB = f"ǫBɪᴛ {version_cache['qbit']}"
-        self.STATUS_TG = f"PʏʀᴏMᴜʟᴛɪ v{version_cache['pyro']}"
-        self.STATUS_YT = f"Yᴛ-Dʟᴘ v{version_cache['ytdlp']}"
-        self.STATUS_EXT = "ᴘExᴛʀᴀᴄᴛ ᴠ𝟸"
-        self.STATUS_SPLIT_MERGE = f"FғMᴘᴇɢ v{version_cache['ffmpeg']}"
-        self.STATUS_ZIP = f"ᴘ𝟽Zɪᴘ v{version_cache['p7zip']}"
-        self.STATUS_QUEUE = "Sʟᴇᴇᴘ ᴠ𝟶"
-        self.STATUS_RCLONE = f"RCʟᴏɴᴇ {version_cache['rclone']}"
+        self.STATUS_ARIA = f"⚡ Aʀɪᴀ𝟸 v{version_cache['aria']}"
+        self.STATUS_AIOHTTP = f"🌐 AɪᴏHᴛᴛᴘ {version_cache['aiohttp']}"
+        self.STATUS_GD = f"☁️ Gᴏᴏɢʟᴇ-Aᴘɪ v{version_cache['gapi']}"
+        self.STATUS_MEGA = f"☁️ MᴇɢᴀSᴅᴋ v{version_cache['mega']}"
+        self.STATUS_QB = f"🌊 ǫBɪᴛ {version_cache['qbit']}"
+        self.STATUS_TG = f"✈️ PʏʀᴏMᴜʟᴛɪ v{version_cache['pyro']}"
+        self.STATUS_YT = f"🎬 Yᴛ-Dʟᴘ v{version_cache['ytdlp']}"
+        self.STATUS_EXT = "📂 ᴘExᴛʀᴀᴄᴛ ᴠ𝟸"
+        self.STATUS_SPLIT_MERGE = f"✂️ FғMᴘᴇɢ v{version_cache['ffmpeg']}"
+        self.STATUS_ZIP = f"🗜️ ᴘ𝟽Zɪᴘ v{version_cache['p7zip']}"
+        self.STATUS_QUEUE = "💤 Sʟᴇᴇᴘ ᴠ𝟶"
+        self.STATUS_RCLONE = f"☁️ RCʟᴏɴᴇ {version_cache['rclone']}"
 
 
 def get_readable_message():
@@ -217,7 +224,7 @@ def get_readable_message():
         msg_link = download.message.link if download.message.chat.type in [
             ChatType.SUPERGROUP, ChatType.CHANNEL] and not config_dict['DELETE_LINKS'] else ''
         elapsed = time() - download.message.date.timestamp()
-        msg += BotTheme('STATUS_NAME', Name="Task is being Processed!" if config_dict['SAFE_MODE'] and elapsed >= config_dict['STATUS_UPDATE_INTERVAL'] else escape(f'{download.name()}'))
+        msg += BotTheme('STATUS_NAME', Name="⚙️ Task is being Processed!" if config_dict['SAFE_MODE'] and elapsed >= config_dict['STATUS_UPDATE_INTERVAL'] else escape(f'{download.name()}'))
         if download.status() not in [MirrorStatus.STATUS_SPLITTING, MirrorStatus.STATUS_SEEDING, MirrorStatus.STATUS_METADATA]:
             msg += BotTheme('BAR', Bar=f"{get_progress_bar_string(download.progress())} {download.progress()}")
             msg += BotTheme('PROCESSED', Processed=f"{download.processed_bytes()} of {download.size()}")
@@ -246,8 +253,7 @@ def get_readable_message():
             msg += BotTheme('STATUS_SIZE', Size=download.size())
             msg += BotTheme('NON_ENGINE', Engine=download.eng())
 
-        msg += BotTheme('USER',
-                        User=download.message.from_user.mention(style="html"))
+        msg += BotTheme('USER', User=download.message.from_user.mention(style="html"))
         msg += BotTheme('ID', Id=download.message.from_user.id)
         if (download.eng()).startswith("qBit"):
             msg += BotTheme('BTSEL', Btsel=f"/{BotCommands.BtSelectCommand}_{download.gid()}")
@@ -278,10 +284,7 @@ def get_readable_message():
         speed_in_bytes_per_second = convert_speed_to_bytes_per_second(spd)
         if tstatus == MirrorStatus.STATUS_DOWNLOADING:
             dl_speed += speed_in_bytes_per_second
-        elif tstatus in [
-            MirrorStatus.STATUS_UPLOADING,
-            MirrorStatus.STATUS_SEEDING,
-        ]:
+        elif tstatus in [MirrorStatus.STATUS_UPLOADING, MirrorStatus.STATUS_SEEDING]:
             up_speed += speed_in_bytes_per_second
 
     msg += BotTheme('FOOTER')
@@ -357,7 +360,7 @@ def is_share_link(url):
 
 
 def is_index_link(url):
-     return bool(re_match(r'https?:\/\/.+\/\d+\:\/', url))
+    return bool(re_match(r'https?:\/\/.+\/\d+\:\/', url))
 
 
 def is_mega_link(url):
@@ -447,9 +450,9 @@ async def download_image_url(url):
                 async with aiopen(des_dir, 'wb') as file:
                     async for chunk in response.content.iter_chunked(1024):
                         await file.write(chunk)
-                LOGGER.info(f"Image Downloaded Successfully as {image_name}")
+                LOGGER.info(f"✅ Image Downloaded Successfully as {image_name}")
             else:
-                LOGGER.error(f"Failed to Download Image from {url}")
+                LOGGER.error(f"❌ Failed to Download Image from {url}")
     return des_dir
 
 
@@ -496,10 +499,10 @@ async def compare_versions(v1, v2):
     for i in range(3):
         v1_part, v2_part = v1_parts[i], v2_parts[i]
         if v1_part < v2_part:
-            return "New Version Update is Available! Check Now!"
+            return "🆕 New Version Update is Available! Check Now!"
         elif v1_part > v2_part:
-            return "More Updated! Kindly Contribute in Official"
-    return "Already up to date with latest version"
+            return "🔝 More Updated! Kindly Contribute in Official"
+    return "✅ Already up to date with latest version"
 
 
 async def get_stats(event, key="home"):
@@ -508,11 +511,11 @@ async def get_stats(event, key="home"):
     btns.ibutton('◀️', f'wzmlx {user_id} stats home')
     if key == "home":
         btns = ButtonMaker()
-        btns.ibutton('Bᴏᴛ Sᴛᴀᴛs', f'wzmlx {user_id} stats stbot')
-        btns.ibutton('Os Sᴛᴀᴛs', f'wzmlx {user_id} stats stsys')
-        btns.ibutton('Rᴇᴘᴏ Sᴛᴀᴛs', f'wzmlx {user_id} stats strepo')
-        btns.ibutton('Bᴏᴛ Lɪᴍɪᴛs', f'wzmlx {user_id} stats botlimits')
-        msg = "⌬ <b><i>Bot & OS Statistics!</i></b>"
+        btns.ibutton('🤖 Bᴏᴛ Sᴛᴀᴛs', f'wzmlx {user_id} stats stbot')
+        btns.ibutton('💻 Os Sᴛᴀᴛs', f'wzmlx {user_id} stats stsys')
+        btns.ibutton('📊 Rᴇᴘᴏ Sᴛᴀᴛs', f'wzmlx {user_id} stats strepo')
+        btns.ibutton('⚙️ Bᴏᴛ Lɪᴍɪᴛs', f'wzmlx {user_id} stats botlimits')
+        msg = "📊 <b><i>Bot & OS Statistics!</i></b>"
     elif key == "stbot":
         total, used, free, disk = disk_usage('/')
         swap = swap_memory()
@@ -533,12 +536,8 @@ async def get_stats(event, key="home"):
             swap_t=get_readable_file_size(swap.total),
             disk=disk,
             disk_bar=get_progress_bar_string(disk),
-            disk_read=f"{get_readable_file_size(disk_io.read_bytes)} ({get_readable_time(disk_io.read_time / 1000)})"
-            if disk_io
-            else "Aᴄᴄᴇss Dᴇɴɪᴇᴅ",
-            disk_write=f"{get_readable_file_size(disk_io.write_bytes)} ({get_readable_time(disk_io.write_time / 1000)})"
-            if disk_io
-            else "Aᴄᴄᴇss Dᴇɴɪᴇᴅ",
+            disk_read=f"{get_readable_file_size(disk_io.read_bytes)} ({get_readable_time(disk_io.read_time / 1000)})" if disk_io else "⛔ Aᴄᴄᴇss Dᴇɴɪᴇᴅ",
+            disk_write=f"{get_readable_file_size(disk_io.write_bytes)} ({get_readable_time(disk_io.write_time / 1000)})" if disk_io else "⛔ Aᴄᴄᴇss Dᴇɴɪᴇᴅ",
             disk_t=get_readable_file_size(total),
             disk_u=get_readable_file_size(used),
             disk_f=get_readable_file_size(free),
@@ -556,7 +555,7 @@ async def get_stats(event, key="home"):
             tl_data=get_readable_file_size(net_io_counters().bytes_recv + net_io_counters().bytes_sent),
             cpu=cpuUsage,
             cpu_bar=get_progress_bar_string(cpuUsage),
-            cpu_freq=f"{cpu_freq(percpu=False).current / 1000:.2f} GHz" if cpu_freq() else "Access Denied",
+            cpu_freq=f"{cpu_freq(percpu=False).current / 1000:.2f} GHz" if cpu_freq() else "⛔ Access Denied",
             sys_load="%, ".join(str(round((x / cpu_count() * 100), 2)) for x in getloadavg()) + "%, (1m, 5m, 15m)",
             p_core=cpu_count(logical=False),
             v_core=cpu_count(logical=True) - cpu_count(logical=False),
@@ -564,7 +563,7 @@ async def get_stats(event, key="home"):
             cpu_use=len(Process().cpu_affinity()),
         )
     elif key == "strepo":
-        last_commit, changelog = 'No Data', 'N/A'
+        last_commit, changelog = '❌ No Data', 'N/A'
         if await aiopath.exists('.git'):
             last_commit = (await cmd_exec("git log -1 --pretty='%cd ( %cr )' --date=format-local:'%d/%m/%Y'", True))[0]
             changelog = (await cmd_exec("git log -1 --pretty=format:'<code>%s</code> <b>By</b> %an'", True))[0]
@@ -578,20 +577,20 @@ async def get_stats(event, key="home"):
         )
     elif key == "botlimits":
         msg = BotTheme('BOT_LIMITS',
-                DL = ('∞' if (val := config_dict['DIRECT_LIMIT']) == '' else val),
-                TL = ('∞' if (val := config_dict['TORRENT_LIMIT']) == '' else val),
-                GL = ('∞' if (val := config_dict['GDRIVE_LIMIT']) == '' else val),
-                YL = ('∞' if (val := config_dict['YTDLP_LIMIT']) == '' else val),
-                PL = ('∞' if (val := config_dict['PLAYLIST_LIMIT']) == '' else val),
-                CL = ('∞' if (val := config_dict['CLONE_LIMIT']) == '' else val),
-                ML = ('∞' if (val := config_dict['MEGA_LIMIT']) == '' else val),
-                LL = ('∞' if (val := config_dict['LEECH_LIMIT']) == '' else val),
-                TV  = ('Dɪsᴀʙʟᴇᴅ' if (val := config_dict['TOKEN_TIMEOUT']) == '' else get_readable_time(val)),
-                UTI = ('Dɪsᴀʙʟᴇᴅ' if (val := config_dict['USER_TIME_INTERVAL']) == 0 else get_readable_time(val)),
-                UT = ('∞' if (val := config_dict['USER_MAX_TASKS']) == '' else val),
-                BT = ('∞' if (val := config_dict['BOT_MAX_TASKS']) == '' else val),
+            DL=('∞' if (val := config_dict['DIRECT_LIMIT']) == '' else val),
+            TL=('∞' if (val := config_dict['TORRENT_LIMIT']) == '' else val),
+            GL=('∞' if (val := config_dict['GDRIVE_LIMIT']) == '' else val),
+            YL=('∞' if (val := config_dict['YTDLP_LIMIT']) == '' else val),
+            PL=('∞' if (val := config_dict['PLAYLIST_LIMIT']) == '' else val),
+            CL=('∞' if (val := config_dict['CLONE_LIMIT']) == '' else val),
+            ML=('∞' if (val := config_dict['MEGA_LIMIT']) == '' else val),
+            LL=('∞' if (val := config_dict['LEECH_LIMIT']) == '' else val),
+            TV=('🚫 Dɪsᴀʙʟᴇᴅ' if (val := config_dict['TOKEN_TIMEOUT']) == '' else get_readable_time(val)),
+            UTI=('🚫 Dɪsᴀʙʟᴇᴅ' if (val := config_dict['USER_TIME_INTERVAL']) == 0 else get_readable_time(val)),
+            UT=('∞' if (val := config_dict['USER_MAX_TASKS']) == '' else val),
+            BT=('∞' if (val := config_dict['BOT_MAX_TASKS']) == '' else val),
         )
-    btns.ibutton('❌', f'wzmlx {user_id} close')
+    btns.ibutton('❌ Close', f'wzmlx {user_id} close')
     return msg, btns.build_menu(2)
 
 
@@ -665,8 +664,8 @@ async def checking_access(user_id, button=None):
         if button is None:
             button = ButtonMaker()
         encrypt_url = b64encode(f"{token}&&{user_id}".encode()).decode()
-        button.ubutton('Generate New Token', short_url(f'https://t.me/{bot_name}?start={encrypt_url}'))
-        return f'<i>Temporary Token has been expired,</i> Kindly generate a New Temp Token to start using bot Again.\n<b>Validity :</b> <code>{get_readable_time(config_dict["TOKEN_TIMEOUT"])}</code>', button
+        button.ubutton('🔑 Generate New Token', short_url(f'https://t.me/{bot_name}?start={encrypt_url}'))
+        return f'⚠️ <i>Temporary Token has been expired,</i> Kindly generate a New Temp Token to start using bot Again.\n<b>⏰ Validity:</b> <code>{get_readable_time(config_dict["TOKEN_TIMEOUT"])}</code>', button
     return None, button
 
 
@@ -675,7 +674,6 @@ def extra_btns(buttons, already=False):
         for btn_name, btn_url in extra_buttons.items():
             buttons.ubutton(btn_name, btn_url, 'l_body')
     return buttons, True
-
 
 
 async def set_commands(client):
@@ -790,6 +788,6 @@ async def set_commands(client):
             bot_cmds.insert(13, BotCommand(BotCommands.YtdlCommand[2], f'or /{BotCommands.YtdlCommand[3]} Mirror yt-dlp supported links and Zip via bot'))
             bot_cmds.insert(13, BotCommand(BotCommands.YtdlLeechCommand[2], f'or /{BotCommands.YtdlLeechCommand[3]} Leech yt-dlp supported links and Zip via bot'))
         await client.set_bot_commands(bot_cmds)
-        LOGGER.info('Bot Commands have been Set & Updated')
+        LOGGER.info('✅ Bot Commands have been Set & Updated')
     except Exception as err:
-        LOGGER.error(err)
+        LOGGER.error(f'❌ Error setting commands: {err}')
